@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selling Price Calculator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-900 text-white;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main calculator container -->
+    <div class="bg-gray-800 p-8 rounded-2xl shadow-lg w-full max-w-2xl border border-gray-700">
+        
+        <!-- Logo and Title -->
+        <div class="flex flex-col items-center mb-6 text-center">
+            <!-- Placeholder for AAROOH logo -->
+            <img src="https://placehold.co/200x50/000000/ffffff?text=AAROOH:" alt="Aarooh Logo" class="mb-4 rounded-lg">
+            <h1 class="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-2">
+                Selling Price Calculator
+            </h1>
+            <p class="text-gray-400 text-sm">Calculate your final selling price with ease.</p>
+        </div>
+
+        <!-- Input Fields -->
+        <div class="space-y-4">
+            <div>
+                <label for="goodsPrice" class="block text-gray-300 mb-1">Goods Price (Cost)</label>
+                <input type="number" id="goodsPrice" placeholder="e.g., 1000" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors">
+            </div>
+            <div>
+                <label for="marginPercent" class="block text-gray-300 mb-1">Margin (%)</label>
+                <input type="number" id="marginPercent" placeholder="e.g., 20" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors">
+            </div>
+            <div>
+                <label for="gstPercent" class="block text-gray-300 mb-1">GST (%)</label>
+                <input type="number" id="gstPercent" placeholder="e.g., 18" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors">
+            </div>
+            <div>
+                <label for="martPercent" class="block text-gray-300 mb-1">Mart Percentage (%)</label>
+                <input type="number" id="martPercent" placeholder="e.g., 5" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors">
+            </div>
+            <div>
+                <label for="martGstPercent" class="block text-gray-300 mb-1">Mart GST (%)</label>
+                <input type="number" id="martGstPercent" placeholder="e.g., 12" class="w-full p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors">
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex space-x-4 mt-6">
+            <button id="calculateBtn" class="w-full py-3 rounded-lg font-semibold text-gray-900 bg-gradient-to-r from-teal-400 to-green-500 hover:from-teal-500 hover:to-green-600 transition-all shadow-md">
+                Calculate
+            </button>
+            <button id="resetBtn" class="w-full py-3 rounded-lg font-semibold text-white bg-gray-600 hover:bg-gray-500 transition-all shadow-md">
+                Reset
+            </button>
+        </div>
+        
+        <!-- Results -->
+        <div class="space-y-4 mt-6">
+            <div class="p-4 rounded-lg bg-gray-700 border border-gray-600">
+                <p class="text-sm text-gray-400">Selling Price:</p>
+                <p id="sellingPrice" class="text-2xl font-bold text-green-400">₹0.00</p>
+            </div>
+            <div class="p-4 rounded-lg bg-gray-700 border border-gray-600">
+                <p class="text-sm text-gray-400">Margin Amount:</p>
+                <p id="marginAmount" class="text-2xl font-bold text-green-400">₹0.00</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to all elements
+        const goodsPriceInput = document.getElementById('goodsPrice');
+        const marginPercentInput = document.getElementById('marginPercent');
+        const gstPercentInput = document.getElementById('gstPercent');
+        const martPercentInput = document.getElementById('martPercent');
+        const martGstPercentInput = document.getElementById('martGstPercent');
+        
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        
+        const sellingPriceDisplay = document.getElementById('sellingPrice');
+        const marginAmountDisplay = document.getElementById('marginAmount');
+        
+        // Function to perform the calculation
+        function calculate() {
+            const goodsN = parseFloat(goodsPriceInput.value);
+            const marginPN = parseFloat(marginPercentInput.value);
+            const gstPN = parseFloat(gstPercentInput.value);
+            const martPN = parseFloat(martPercentInput.value);
+            const martGstPN = parseFloat(martGstPercentInput.value);
+
+            // Validate inputs
+            if (isNaN(goodsN) || isNaN(marginPN) || isNaN(gstPN) || isNaN(martPN) || isNaN(martGstPN)) {
+                alert('Please enter valid numbers for all fields.');
+                return;
+            }
+
+            try {
+                // The fixed formula
+                const net = ((1 - martGstPN / 100) * (1 - martPN / 100) - marginPN / 100);
+                const final = goodsN * (1 + gstPN / 100) / net;
+                const marginAmt = final * marginPN / 100;
+                
+                sellingPriceDisplay.textContent = `₹${final.toFixed(2)}`;
+                marginAmountDisplay.textContent = `₹${marginAmt.toFixed(2)}`;
+            } catch (error) {
+                alert('Error in calculation. Please check your inputs.');
+                console.error(error);
+            }
+        }
+
+        // Event listener for Calculate button
+        calculateBtn.addEventListener('click', calculate);
+
+        // Event listener for Reset button
+        resetBtn.addEventListener('click', () => {
+            goodsPriceInput.value = '';
+            marginPercentInput.value = '';
+            gstPercentInput.value = '';
+            martPercentInput.value = '';
+            martGstPercentInput.value = '';
+            
+            sellingPriceDisplay.textContent = '₹0.00';
+            marginAmountDisplay.textContent = '₹0.00';
+        });
+
+        // Custom alert function to replace window.alert
+        function alert(message) {
+            const alertBox = document.createElement('div');
+            alertBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            alertBox.innerHTML = `
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center max-w-sm mx-auto border border-gray-700">
+                    <p class="text-white text-lg mb-4">${message}</p>
+                    <button class="px-6 py-2 rounded-lg font-semibold text-gray-900 bg-gradient-to-r from-teal-400 to-green-500 hover:from-teal-500 hover:to-green-600 transition-all" onclick="this.parentElement.parentElement.remove()">
+                        OK
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(alertBox);
+        }
+
+    </script>
+</body>
+</html>
